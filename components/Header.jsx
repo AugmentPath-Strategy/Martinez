@@ -21,9 +21,9 @@ export default function Header({ onFilter } = {}) {
   };
 
   return (
-    <header className={`site-header${solid ? " solid" : ""}`}>
+    <header className={`site-header${solid || menuOpen ? " solid" : ""}`}>
       <div className="wrap nav">
-        <a className="brand" href="#home">Martinez<small>Painting · Austin</small></a>
+        <a className="brand" href="#home"><img src="/logo.png" alt="Martinez Painting" className="brand-logo" /><span className="brand-copy">Martinez<small>Painting · Austin</small></span></a>
         <ul className="nav-links">
           <li><a href="#home">Home</a></li>
           <li className="has-sub">

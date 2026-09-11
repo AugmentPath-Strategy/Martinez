@@ -5,7 +5,7 @@ export default function LegalLayout({ kicker, title, children }) {
     <>
       <header className="site-header solid">
         <div className="wrap nav">
-          <Link className="brand" href="/">Martinez<small>Painting · Austin</small></Link>
+          <Link className="brand" href="/"><img src="/logo.png" alt="Martinez Painting" className="brand-logo" /><span className="brand-copy">Martinez<small>Painting · Austin</small></span></Link>
           <nav className="legal-nav">
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms & Conditions</Link>

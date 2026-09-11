@@ -9,7 +9,7 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="wrap footer-grid">
         <div>
-          <a className="brand" href="#home">Martinez<small>The Painter Service in Austin, TX</small></a>
+          <a className="brand" href="#home"><img src="/logo.png" alt="Martinez Painting" className="brand-logo" /><span className="brand-copy">Martinez<small>The Painter Service in Austin, TX</small></span></a>
           <p style={{ margin: "18px 0 22px" }}>Connect with our socials on Facebook.</p>
           <button className="btn btn-cream" onClick={openQuote}>Book Now</button>
         </div>
