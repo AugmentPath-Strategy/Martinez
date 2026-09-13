@@ -79,7 +79,7 @@ export default function HomePage() {
                 <p className="max-w-[46ch] text-[17px] text-[color:var(--muted)]">
                   We at Martinez Painting proudly serve Austin, TX, and nearby communities with skilled, reliable painter services. Our team brings care, precision, and vibrant results to every project, from interiors to exteriors. We focus on quality workmanship, clear communication, and customer satisfaction in every space we transform.
                 </p>
-                <div className="mt-10 grid grid-cols-5 gap-2">
+                <div className="mt-10 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
                   {PALETTE.map((chip) => (
                     <div key={chip.name} className="min-h-[88px] p-3 text-[11px] tracking-[0.12em] uppercase" style={{ background: chip.hex, color: chip.name === "Ink" ? "#f3ece3" : "#161310" }}>
                       <span className="opacity-60">{chip.id}</span>

@@ -32,9 +32,10 @@ export default function InsuredBadge() {
           });
         }
 
+        const compact = window.matchMedia("(max-width: 900px)").matches;
         gsap.to(badgeRef.current, {
-          y: -72,
-          rotate: 8,
+          y: compact ? -22 : -72,
+          rotate: compact ? 4 : 8,
           ease: "none",
           scrollTrigger: {
             trigger: badgeRef.current.closest("section"),

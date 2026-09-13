@@ -77,9 +77,9 @@ export default function Hero() {
     <section
       ref={rootRef}
       id="hero"
-      className="relative grid min-h-[100svh] overflow-hidden bg-[color:var(--bg)] text-[color:var(--fg)] lg:grid-cols-[0.9fr_1.1fr]"
+      className="hero relative grid min-h-[100svh] overflow-hidden bg-[color:var(--bg)] text-[color:var(--fg)] lg:grid-cols-[0.9fr_1.1fr]"
     >
-      <div ref={copyRef} className="relative flex flex-col justify-between px-6 pb-10 pt-28 md:px-12 lg:px-14">
+      <div ref={copyRef} className="hero-copy relative flex flex-col justify-between px-5 pb-10 pt-28 md:px-12 lg:px-14">
         <div>
           <p ref={kickerRef} className="kicker">The painter service in Austin, TX</p>
           <HeroTitle />
@@ -89,13 +89,13 @@ export default function Hero() {
             <Cta variant="secondary" type="button" onClick={openQuote}>Call Us</Cta>
           </div>
         </div>
-        <div className="mt-16 flex justify-between gap-6 border-t border-[color:var(--rule)] pt-6 text-[12px] tracking-[0.12em] uppercase text-[color:var(--muted)]">
+        <div className="hero-meta mt-16 flex justify-between gap-6 border-t border-[color:var(--rule)] pt-6 text-[12px] tracking-[0.12em] uppercase text-[color:var(--muted)]">
           <span>Interior · Exterior · Commercial</span>
           <span>Austin & nearby communities</span>
         </div>
       </div>
 
-      <div className="relative min-h-[52vh] lg:min-h-[100svh]">
+      <div className="hero-media relative min-h-[52vh] lg:min-h-[100svh]">
         <div className="absolute inset-0 overflow-hidden">
           <img
             ref={imageRef}
@@ -111,8 +111,8 @@ export default function Hero() {
           <i className="block h-[72px] w-14 bg-live-oak" />
           <i className="block h-[72px] w-14 bg-ink" />
         </div>
-        <InsuredBadge />
       </div>
+      <InsuredBadge />
     </section>
   );
 }

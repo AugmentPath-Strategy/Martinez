@@ -79,7 +79,7 @@ export default function HeroTitle() {
   }, [reduced]);
 
   return (
-    <h1 ref={rootRef} className="hero-title mt-5 max-w-[9ch] text-[clamp(68px,8.4vw,128px)]" aria-label="Martinez Painting">
+    <h1 ref={rootRef} className="hero-title mt-5 max-w-[9ch] text-[clamp(46px,12vw,128px)]" aria-label="Martinez Painting">
       <span className="block">
         <Word text="Martinez" />
       </span>

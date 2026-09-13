@@ -6,7 +6,21 @@ import { useTheme } from "./ThemeProvider";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
 function coverRadius(x, y) {
-  return Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+  const width = window.visualViewport?.width ?? window.innerWidth;
+  const height = window.visualViewport?.height ?? window.innerHeight;
+  return Math.hypot(Math.max(x, width - x), Math.max(y, height - y));
+}
+
+function buttonOrigin(button) {
+  const rect = button.getBoundingClientRect();
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2,
+  };
+}
+
+function useCircleVeil() {
+  return window.matchMedia("(max-width: 900px), (pointer: coarse)").matches;
 }
 
 export default function ThemeToggle() {
@@ -24,58 +38,58 @@ export default function ThemeToggle() {
       return;
     }
 
-    const rect = button.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
+    const { x, y } = buttonOrigin(button);
     const radius = coverRadius(x, y);
     const root = document.documentElement;
     root.style.setProperty("--theme-x", `${x}px`);
     root.style.setProperty("--theme-y", `${y}px`);
     root.style.setProperty("--theme-r", `${radius}px`);
 
-    if (typeof document.startViewTransition === "function") {
+    const playVeil = async () => {
+      if (busyRef.current) {
+        setTheme(next);
+        return;
+      }
+
+      busyRef.current = true;
+      document.querySelectorAll(".theme-veil").forEach((node) => node.remove());
+      setTheme(next);
+
+      const { default: gsap } = await import("gsap");
+      const veil = document.createElement("div");
+      veil.className = "theme-veil";
+      veil.setAttribute("aria-hidden", "true");
+      veil.style.pointerEvents = "none";
+      document.body.appendChild(veil);
+
+      gsap.fromTo(
+        veil,
+        { clipPath: `circle(8px at ${x}px ${y}px)` },
+        {
+          clipPath: `circle(${radius}px at ${x}px ${y}px)`,
+          duration: 1.7,
+          ease: "power2.out",
+          onComplete: () => {
+            veil.remove();
+            busyRef.current = false;
+          },
+        },
+      );
+    };
+
+    if (!useCircleVeil() && typeof document.startViewTransition === "function") {
       try {
         const transition = document.startViewTransition(() => {
           setTheme(next);
         });
         await transition.finished;
       } catch {
-        setTheme(next);
+        await playVeil();
       }
       return;
     }
 
-    if (busyRef.current) {
-      setTheme(next);
-      return;
-    }
-
-    busyRef.current = true;
-    document.querySelectorAll(".theme-veil").forEach((node) => node.remove());
-    setTheme(next);
-
-    const { default: gsap } = await import("gsap");
-    const veil = document.createElement("div");
-    veil.className = "theme-veil";
-    veil.setAttribute("aria-hidden", "true");
-    veil.style.pointerEvents = "none";
-    veil.style.setProperty("--theme-x", `${x}px`);
-    veil.style.setProperty("--theme-y", `${y}px`);
-    document.body.appendChild(veil);
-
-    gsap.fromTo(
-      veil,
-      { clipPath: `circle(8px at ${x}px ${y}px)` },
-      {
-        clipPath: `circle(${radius}px at ${x}px ${y}px)`,
-        duration: 1.7,
-        ease: "power2.out",
-        onComplete: () => {
-          veil.remove();
-          busyRef.current = false;
-        },
-      },
-    );
+    await playVeil();
   };
 
   return (
