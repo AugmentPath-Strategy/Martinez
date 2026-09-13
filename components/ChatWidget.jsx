@@ -61,7 +61,7 @@ export default function ChatWidget() {
   useEffect(() => {
     if (!open) return;
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, open]);
+  }, [messages, open, pending]);
 
   const send = async (event) => {
     event.preventDefault();
@@ -121,7 +121,18 @@ export default function ChatWidget() {
               {item.role === "assistant" ? toPlainChat(item.content) : item.content}
             </p>
           ))}
-          {pending && <p className="self-start bg-[color:var(--bg)] px-3.5 py-3 text-sm text-[color:var(--muted)]">Reviewing our published information…</p>}
+          {pending && (
+            <div
+              className="chat-typing self-start bg-[color:var(--bg)]"
+              role="status"
+              aria-live="polite"
+              aria-label="Typing"
+            >
+              <span />
+              <span />
+              <span />
+            </div>
+          )}
         </div>
         <form className="grid grid-cols-[1fr_auto] gap-2 border-t border-[color:var(--rule)] p-3" onSubmit={send}>
           <label className="sr-only" htmlFor="chat-input">Ask about Martinez Painting</label>
