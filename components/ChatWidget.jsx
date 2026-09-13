@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Cta from "./Cta";
+import { toPlainChat } from "@/lib/plainChat";
 
 const WELCOME =
-  "Good day. I am the Martinez Painting website assistant. I can discuss only the information published on this site: our painting services, free estimates, hours, service areas, reviews, and company policies.";
+  "Hi. I can answer short questions about Martinez Painting services, free estimates, hours, and the areas we serve.";
 
-const STORAGE_KEY = "martinez-chat-messages";
+const STORAGE_KEY = "martinez-chat-messages-v2";
 
 function loadMessages() {
   try {
@@ -83,7 +84,10 @@ export default function ChatWidget() {
       const data = await response.json();
       setMessages([
         ...next,
-        { role: "assistant", content: data.reply || data.error || "Unable to complete that request at this time." },
+        {
+          role: "assistant",
+          content: toPlainChat(data.reply || data.error) || "Unable to complete that request at this time.",
+        },
       ]);
     } catch {
       setMessages([...next, { role: "assistant", content: "Unable to complete that request at this time." }]);
@@ -114,7 +118,7 @@ export default function ChatWidget() {
                 item.role === "user" ? "self-end bg-clay text-[#fff7ef]" : "self-start bg-[color:var(--bg)]"
               }`}
             >
-              {item.content}
+              {item.role === "assistant" ? toPlainChat(item.content) : item.content}
             </p>
           ))}
           {pending && <p className="self-start bg-[color:var(--bg)] px-3.5 py-3 text-sm text-[color:var(--muted)]">Reviewing our published information…</p>}
