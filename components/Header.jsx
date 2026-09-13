@@ -1,72 +1,83 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Cta from "./Cta";
 import { useQuote } from "./QuoteContext";
+import { scrollToId } from "@/lib/scrollToId";
 
 export default function Header({ onFilter } = {}) {
   const { openQuote } = useQuote();
-  const [solid, setSolid] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > window.innerHeight * 0.72);
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const jump = (filter) => {
+  const go = (event, id, filter) => {
+    event.preventDefault();
     onFilter?.(filter);
     setMenuOpen(false);
+    scrollToId(id);
   };
 
   return (
-    <header className={`site-header${solid || menuOpen ? " solid" : ""}`}>
-      <div className="wrap nav">
-        <a className="brand" href="#home"><img src="/logo.png" alt="Martinez Painting" className="brand-logo" /><span className="brand-copy">Martinez<small>Painting · Austin</small></span></a>
-        <ul className="nav-links">
-          <li><a href="#home">Home</a></li>
-          <li className="has-sub">
-            <a href="#services">Services</a>
-            <ul className="sub">
-              <li><a href="#interior">Interior Painting</a></li>
-              <li><a href="#exterior">Exterior Painting</a></li>
-              <li><a href="#commercial">Commercial Painting</a></li>
-            </ul>
-          </li>
-          <li className="has-sub">
-            <a href="#galleries">Galleries</a>
-            <ul className="sub">
-              <li><a href="#galleries" onClick={() => jump("commercial")}>Commercial Spaces</a></li>
-              <li><a href="#galleries" onClick={() => jump("exterior")}>Exterior Makeovers</a></li>
-              <li><a href="#galleries" onClick={() => jump("interior")}>Interior Transformations</a></li>
-              <li><a href="#galleries" onClick={() => jump("residential")}>Residential Projects</a></li>
-              <li><a href="#galleries" onClick={() => jump("specialty")}>Specialty Finishes</a></li>
-              <li><a href="#galleries" onClick={() => jump("all")}>All Photos</a></li>
-            </ul>
-          </li>
-          <li><a href="#reviews">Reviews</a></li>
-          <li><a href="#faq">FAQs</a></li>
-        </ul>
-        <div className="nav-cta">
-          <button type="button" onClick={openQuote}>Send us a Text</button>
-          <button className="call" type="button" onClick={openQuote}>Call Now</button>
+    <header className="site-header">
+      <div className="site-header-bar">
+        <a className="site-logo" href="#home" onClick={(event) => go(event, "home")}>
+          Martinez
+          <small>Painting · Austin</small>
+        </a>
+
+        <nav className="site-nav" aria-label="Primary">
+          <a href="#home" onClick={(event) => go(event, "home")}>Home</a>
+          <div className="site-nav-item">
+            <a href="#services" onClick={(event) => go(event, "services")}>Services</a>
+            <div className="site-nav-menu">
+              <a href="#interior" onClick={(event) => go(event, "interior")}>Interior Painting</a>
+              <a href="#exterior" onClick={(event) => go(event, "exterior")}>Exterior Painting</a>
+              <a href="#commercial" onClick={(event) => go(event, "commercial")}>Commercial Painting</a>
+            </div>
+          </div>
+          <div className="site-nav-item">
+            <a href="#galleries" onClick={(event) => go(event, "galleries")}>Galleries</a>
+            <div className="site-nav-menu">
+              <a href="#galleries" onClick={(event) => go(event, "galleries", "commercial")}>Commercial Spaces</a>
+              <a href="#galleries" onClick={(event) => go(event, "galleries", "exterior")}>Exterior Makeovers</a>
+              <a href="#galleries" onClick={(event) => go(event, "galleries", "interior")}>Interior Transformations</a>
+              <a href="#galleries" onClick={(event) => go(event, "galleries", "residential")}>Residential Projects</a>
+              <a href="#galleries" onClick={(event) => go(event, "galleries", "specialty")}>Specialty Finishes</a>
+              <a href="#galleries" onClick={(event) => go(event, "galleries", "all")}>All Photos</a>
+            </div>
+          </div>
+          <a href="#reviews" onClick={(event) => go(event, "reviews")}>Reviews</a>
+          <a href="#faq" onClick={(event) => go(event, "faq")}>FAQs</a>
+        </nav>
+
+        <div className="site-header-cta">
+          <Cta variant="tertiary" type="button" onClick={openQuote}>Send us a Text</Cta>
+          <Cta variant="primary" type="button" onClick={openQuote}>Get a Free Quote</Cta>
         </div>
-        <button className="menu-btn" type="button" aria-label="Open menu" onClick={() => setMenuOpen((v) => !v)}>☰</button>
+
+        <button
+          className="site-menu-btn"
+          type="button"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((value) => !value)}
+        >
+          {menuOpen ? "✕" : "☰"}
+        </button>
       </div>
+
       {menuOpen && (
-        <div className="mobile-panel open">
-          <a href="#home" onClick={() => setMenuOpen(false)}>Home</a>
-          <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
-          <a href="#services" onClick={() => setMenuOpen(false)}>Services</a>
-          <a href="#galleries" onClick={() => setMenuOpen(false)}>Galleries</a>
-          <a href="#interior" onClick={() => setMenuOpen(false)}>Interior Painting</a>
-          <a href="#exterior" onClick={() => setMenuOpen(false)}>Exterior Painting</a>
-          <a href="#commercial" onClick={() => setMenuOpen(false)}>Commercial Painting</a>
-          <a href="#reviews" onClick={() => setMenuOpen(false)}>Reviews</a>
-          <a href="#faq" onClick={() => setMenuOpen(false)}>Frequently asked questions</a>
-          <button type="button" onClick={() => { openQuote(); setMenuOpen(false); }}>Send us a Text</button>
-          <button type="button" onClick={() => { openQuote(); setMenuOpen(false); }}>Call Now</button>
+        <div className="site-mobile">
+          <a href="#home" onClick={(event) => go(event, "home")}>Home</a>
+          <a href="#about" onClick={(event) => go(event, "about")}>About</a>
+          <a href="#services" onClick={(event) => go(event, "services")}>Services</a>
+          <a href="#galleries" onClick={(event) => go(event, "galleries")}>Galleries</a>
+          <a href="#interior" onClick={(event) => go(event, "interior")}>Interior Painting</a>
+          <a href="#exterior" onClick={(event) => go(event, "exterior")}>Exterior Painting</a>
+          <a href="#commercial" onClick={(event) => go(event, "commercial")}>Commercial Painting</a>
+          <a href="#reviews" onClick={(event) => go(event, "reviews")}>Reviews</a>
+          <a href="#faq" onClick={(event) => go(event, "faq")}>Frequently asked questions</a>
+          <Cta variant="tertiary" type="button" onClick={() => { openQuote(); setMenuOpen(false); }}>Send us a Text</Cta>
+          <Cta variant="primary" type="button" onClick={() => { openQuote(); setMenuOpen(false); }}>Get a Free Quote</Cta>
         </div>
       )}
     </header>

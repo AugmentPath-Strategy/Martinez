@@ -1,16 +1,25 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 
-const QuoteContext = createContext(null);
+const QuoteContext = createContext({
+  open: false,
+  openQuote: () => {},
+  closeQuote: () => {},
+});
 
 export function QuoteProvider({ children }) {
   const [open, setOpen] = useState(false);
-  return (
-    <QuoteContext.Provider value={{ open, openQuote: () => setOpen(true), closeQuote: () => setOpen(false) }}>
-      {children}
-    </QuoteContext.Provider>
+  const value = useMemo(
+    () => ({
+      open,
+      openQuote: () => setOpen(true),
+      closeQuote: () => setOpen(false),
+    }),
+    [open],
   );
+
+  return <QuoteContext.Provider value={value}>{children}</QuoteContext.Provider>;
 }
 
 export function useQuote() {

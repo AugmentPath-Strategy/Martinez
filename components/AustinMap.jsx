@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polygon, useMap } from "react-leaflet";
 import L from "leaflet";
 import { LOCATIONS, SERVICE_POLYGON } from "./locations";
+import { useTheme } from "./ThemeProvider";
 import "leaflet/dist/leaflet.css";
 
 const pin = L.divIcon({
@@ -23,11 +24,17 @@ function FlyTo({ place }) {
 }
 
 export default function AustinMap({ selected }) {
+  const { theme } = useTheme();
+  const tiles = theme === "light"
+    ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+    : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+
   return (
-    <MapContainer center={[30.32, -97.74]} zoom={9} className="leaflet-host" scrollWheelZoom>
+    <MapContainer center={[30.32, -97.74]} zoom={9} className="leaflet-host h-full min-h-[520px]" scrollWheelZoom>
       <TileLayer
+        key={theme}
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        url={tiles}
       />
       <Polygon
         positions={SERVICE_POLYGON}

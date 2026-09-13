@@ -1,326 +1,324 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Header from "./Header";
 import Footer from "./Footer";
 import Ticker from "./Ticker";
 import AreaMapSection from "./AreaMapSection";
+import Hero from "./Hero";
+import Reveal from "./Reveal";
+import FolioPin from "./FolioPin";
+import Cta from "./Cta";
 import { useQuote } from "./QuoteContext";
+import { FAQS, FILTERS, GALLERY, PALETTE, SHOWCASES } from "@/lib/siteContent";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
-const GALLERY = [
-  { category: "interior", src: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80", caption: "Interior Transformations" },
-  { category: "residential", src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80", caption: "Residential Projects" },
-  { category: "specialty", src: "https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=900&q=80", caption: "Specialty Finishes" },
-  { category: "commercial", src: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=900&q=80", caption: "Commercial Spaces" },
-  { category: "exterior", src: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=80", caption: "Exterior Makeovers" },
-  { category: "interior", src: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=80", caption: "Interior Transformations" },
-  { category: "residential", src: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdac?auto=format&fit=crop&w=900&q=80", caption: "Residential Projects" },
-  { category: "specialty", src: "https://images.unsplash.com/photo-1615874959474-d391ffcdc310?auto=format&fit=crop&w=900&q=80", caption: "Specialty Finishes" },
-];
-
-const FAQS = [
+const SERVICES = [
   {
-    q: "Does Martinez Painting offer free estimates for their painting services?",
-    a: "Yes, Martinez Painting provides free estimates for all their painting services. Whether you're planning a residential or commercial project, their team will assess your needs and offer an accurate quote at no cost, helping you budget effectively without any obligation.",
+    id: "interior",
+    idx: "01 — Interior",
+    title: "Interior Painting",
+    copy: "Transform your home with our expert interior painting service, delivering precision and premium finishes. Enhance every room's ambiance while ensuring durability and a meticulous touch in every stroke.",
+    src: "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1400&q=80",
+    alt: "Bedroom interior with a calm limestone repaint and precise trim work in Austin, TX",
   },
   {
-    q: "What makes Martinez Painting different from other painting services?",
-    a: "Martinez Painting stands out for our commitment to personalized service, attention to detail, and the highest quality workmanship. We use premium paints and materials to ensure a beautiful, lasting finish, and our experienced team is dedicated to working closely with clients to understand their vision and exceed their expectations. Moreover, we offer flexible scheduling and competitive pricing to accommodate the unique needs of each project, ensuring a smooth and satisfying experience from start to finish.",
+    id: "exterior",
+    idx: "02 — Exterior",
+    title: "Exterior Painting",
+    copy: "Transform your home's appearance with our professional exterior painting service, providing exceptional craftsmanship, high-quality paints, and a meticulous approach to ensure a stunning and long-lasting finish that enhances curb appeal.",
+    src: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1400&q=80",
+    alt: "Two-story residential exterior after a full repaint in Round Rock, TX",
+    reverse: true,
   },
   {
-    q: "What services does Martinez Painting provide?",
-    a: "Martinez Painting offers a wide range of services to meet all your painting needs, including residential and commercial interior and exterior painting, surface preparation, drywall repair, wallpaper removal, color consultations, and specialty finishes. Our skilled team is dedicated to delivering high-quality craftsmanship and exceptional customer service, ensuring your spaces are transformed beautifully and efficiently.",
+    id: "commercial",
+    idx: "03 — Commercial",
+    title: "Commercial Painting",
+    copy: "Enhance your workplace with our commercial painting service, offering expert craftsmanship, premium materials, and a flawless finish to transform spaces efficiently while minimizing disruption to your daily routine.",
+    src: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=80",
+    alt: "Commercial office interior after an after-hours painting project in Austin, TX",
   },
-  {
-    q: "How do I get a quote from Martinez Painting?",
-    a: "Receiving a quote is easy and only takes three simple steps. Send us a text, chat on the phone, then receive a quote. We usually respond via text within a few minutes. Use Send us a Text or Get a Free Quote to get started.",
-  },
-  {
-    q: "Which areas does Martinez Painting serve?",
-    a: "Martinez Painting proudly serves Austin, TX and surrounding areas, including Round Rock, Cedar Park, Georgetown, San Marcos, Leander, Pflugerville, University of Texas, Kyle, and Hutto.",
-  },
-  {
-    q: "What are Martinez Painting’s hours, and is the team insured?",
-    a: "Sunday 08:00am–06:00pm, Monday through Friday 9:00am–5:00pm, and Saturday 08:00am–06:00pm. Martinez Painting is insured, and our properties work is completed with care, precision, and clear communication.",
-  },
-];
-
-const FILTERS = [
-  ["commercial", "Commercial Spaces"],
-  ["exterior", "Exterior Makeovers"],
-  ["interior", "Interior Transformations"],
-  ["residential", "Residential Projects"],
-  ["specialty", "Specialty Finishes"],
-  ["all", "All Photos"],
 ];
 
 export default function HomePage() {
   const { openQuote } = useQuote();
+  const reduced = usePrefersReducedMotion();
   const [filter, setFilter] = useState("all");
   const [openFaq, setOpenFaq] = useState(null);
   const [lightbox, setLightbox] = useState(null);
-
   const photos = GALLERY.filter((item) => filter === "all" || item.category === filter);
 
   return (
     <>
       <Header onFilter={setFilter} />
       <main id="home">
-        <section className="hero">
-          <div className="hero-copy">
-            <div>
-              <p className="kicker">The painter service in Austin, TX</p>
-              <h1>Martinez <em>Painting</em></h1>
-              <p className="hero-lead">Martinez Painting provides reliable painter services in Austin, TX and surrounding areas, delivering quality results for homes and businesses through the painter.</p>
-              <div className="hero-actions">
-                <button className="btn btn-cream" onClick={openQuote}>Get a Free Quote</button>
-                <button className="btn btn-line" onClick={openQuote}>Call Us</button>
-              </div>
-            </div>
-            <div className="hero-meta">
-              <span>Interior · Exterior · Commercial</span>
-              <span>Austin & nearby communities</span>
-            </div>
-          </div>
-          <div className="hero-visual">
-            <img src="https://images.unsplash.com/photo-1556912173-46c336c7fd55?auto=format&fit=crop&w=1800&q=80" alt="Thoughtfully finished kitchen interior" />
-            <div className="swatches" aria-hidden="true">
-              <i className="swatch" /><i className="swatch" /><i className="swatch" /><i className="swatch" />
-            </div>
-            <div className="stamp">Our properties<br />Insured</div>
-          </div>
-        </section>
-
+        <Hero />
         <Ticker />
 
-        <section className="block" id="about">
-          <div className="wrap about">
-            <div className="about-art">
-              <img className="main" src="https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=1200&q=80" alt="Martinez Painting team in Austin, TX - people or person" />
-              <img className="float" src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80" alt="Warm painted interior with wood and plaster tones" />
-              <span className="caption">Our properties · Insured</span>
-            </div>
-            <div>
-              <p className="folio"><span>01 / Studio</span><span>About Us</span></p>
-              <h2>About Us</h2>
-              <p>We at Martinez Painting proudly serve Austin, TX, and nearby communities with skilled, reliable painter services. Our team brings care, precision, and vibrant results to every project, from interiors to exteriors. We focus on quality workmanship, clear communication, and customer satisfaction in every space we transform.</p>
-              <p className="social-line">Connect with our socials · <a href="https://www.facebook.com" target="_blank" rel="noreferrer">Facebook</a></p>
-              <div className="palette">
-                <div className="chip c1"><span>01</span><b>Clay</b></div>
-                <div className="chip c2"><span>02</span><b>Caliche</b></div>
-                <div className="chip c3"><span>03</span><b>Live Oak</b></div>
-                <div className="chip c4"><span>04</span><b>Limestone</b></div>
-                <div className="chip c5"><span>05</span><b>Ink</b></div>
+        <FolioPin index="01" label="Studio">
+          <section className="bg-[color:var(--bg)] py-28" id="about">
+            <div className="mx-auto grid w-[min(1320px,calc(100%-48px))] items-center gap-16 lg:grid-cols-2">
+              <div className="relative">
+                <img
+                  className="aspect-[4/5] w-full object-cover"
+                  src="https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=1200&q=80"
+                  alt="Martinez Painting crew preparing an interior wall in Austin, TX"
+                />
+                <img
+                  className="absolute -right-6 -bottom-10 hidden w-[46%] border-[10px] border-[color:var(--bg)] object-cover shadow-2xl md:block"
+                  src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80"
+                  alt="Warm painted interior with wood millwork and plaster tones in Austin, TX"
+                />
+                <span className="mt-4 inline-block text-[12px] tracking-[0.16em] uppercase text-[color:var(--muted)]">Our properties · Insured</span>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="services">
-          <div className="wrap block" style={{ paddingBottom: 24 }}>
-            <p className="folio"><span>02 / Practice</span><span>Our Services</span></p>
-            <div className="services-head"><h2>What we are best at</h2></div>
-          </div>
-          <article className="service-row" id="interior">
-            <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1400&q=80" alt="Interior painting for Martinez Painting in Austin, TX" />
-            <div className="copy">
-              <div className="idx">01 — Interior</div>
-              <h3>Interior Painting</h3>
-              <p>Transform your home with our expert interior painting service, delivering precision and premium finishes. Enhance every room&apos;s ambiance while ensuring durability and a meticulous touch in every stroke.</p>
-            </div>
-          </article>
-          <article className="service-row reverse" id="exterior">
-            <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1400&q=80" alt="Exterior painting for Martinez Painting in Austin, TX" />
-            <div className="copy">
-              <div className="idx">02 — Exterior</div>
-              <h3>Exterior Painting</h3>
-              <p>Transform your home&apos;s appearance with our professional exterior painting service, providing exceptional craftsmanship, high-quality paints, and a meticulous approach to ensure a stunning and long-lasting finish that enhances curb appeal.</p>
-            </div>
-          </article>
-          <article className="service-row" id="commercial">
-            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=80" alt="Commercial painting for Martinez Painting in Austin, TX" />
-            <div className="copy">
-              <div className="idx">03 — Commercial</div>
-              <h3>Commercial Painting</h3>
-              <p>Enhance your home&apos;s aesthetic with our Commercial Painting service, offering expert craftsmanship, premium materials, and a flawless finish to transform spaces efficiently while minimizing disruption to your daily routine.</p>
-            </div>
-          </article>
-        </section>
-
-        <section className="mid-cta">
-          <div className="wrap">
-            <p className="kicker">Ready to get started?</p>
-            <h2>Book an appointment today.</h2>
-            <div className="hero-actions">
-              <button className="btn btn-cream" onClick={openQuote}>Get a Free Quote</button>
-              <button className="btn btn-line" onClick={openQuote}>Call Us</button>
-            </div>
-          </div>
-        </section>
-
-        <section className="block" id="quote">
-          <div className="wrap process">
-            <div>
-              <p className="folio"><span>03 / Quote</span><span>Get a quote</span></p>
-              <h2>Receiving a quote is easy and only takes three simple steps</h2>
-            </div>
-            <div className="timeline">
-              <article className="tl">
-                <div className="idx">01</div>
-                <h3>Send us a text</h3>
-                <p>Tell us what you need painted. We usually respond via text within a few minutes.</p>
-                <button className="btn btn-fill" style={{ marginTop: 18 }} onClick={openQuote}>Text Us</button>
-              </article>
-              <article className="tl">
-                <div className="idx">02</div>
-                <h3>Chat on the phone</h3>
-                <p>Walk through colors, timing, and the rooms or buildings that need attention.</p>
-              </article>
-              <article className="tl">
-                <div className="idx">03</div>
-                <h3>Receive a quote</h3>
-                <p>Get a clear, no-obligation estimate for residential or commercial work.</p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section className="block" id="galleries" style={{ paddingTop: 0 }}>
-          <div className="wrap">
-            <div className="gallery-tools">
               <div>
-                <p className="folio"><span>04 / Archive</span><span>Our Best Work</span></p>
-                <h2>See why our customers love us</h2>
-                <a className="see-all" href="#galleries" onClick={() => setFilter("all")}>See all photos</a>
+                <p className="folio lg:hidden"><span>01 / Studio</span><span>About Us</span></p>
+                <h2 className="mb-6 text-[clamp(48px,6vw,84px)]">About Us</h2>
+                <p className="max-w-[46ch] text-[17px] text-[color:var(--muted)]">
+                  We at Martinez Painting proudly serve Austin, TX, and nearby communities with skilled, reliable painter services. Our team brings care, precision, and vibrant results to every project, from interiors to exteriors. We focus on quality workmanship, clear communication, and customer satisfaction in every space we transform.
+                </p>
+                <div className="mt-10 grid grid-cols-5 gap-2">
+                  {PALETTE.map((chip) => (
+                    <div key={chip.name} className="min-h-[88px] p-3 text-[11px] tracking-[0.12em] uppercase" style={{ background: chip.hex, color: chip.name === "Ink" ? "#f3ece3" : "#161310" }}>
+                      <span className="opacity-60">{chip.id}</span>
+                      <b className="mt-3 block font-sans font-semibold">{chip.name}</b>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="filters">
-                {FILTERS.map(([value, label]) => (
-                  <button key={value} className={`filter${filter === value ? " active" : ""}`} type="button" onClick={() => setFilter(value)}>{label}</button>
+            </div>
+          </section>
+        </FolioPin>
+
+        <FolioPin index="02" label="Practice">
+          <section id="services">
+            <Reveal className="mx-auto w-[min(1320px,calc(100%-48px))] pb-6 pt-28">
+              <p className="folio lg:hidden"><span>02 / Practice</span><span>Our Services</span></p>
+              <h2 className="text-[clamp(48px,6vw,84px)]">What we are best at</h2>
+            </Reveal>
+            {SERVICES.map((service) => (
+              <article
+                key={service.id}
+                id={service.id}
+                className={`grid min-h-[70vh] lg:grid-cols-2 ${service.reverse ? "lg:[&>*:first-child]:order-2" : ""}`}
+              >
+                <div className="min-h-[320px] overflow-hidden">
+                  <motion.img
+                    src={service.src}
+                    alt={service.alt}
+                    className="h-full w-full object-cover"
+                    whileHover={reduced ? {} : { scale: 1.04 }}
+                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                </div>
+                <Reveal className="flex flex-col justify-center bg-[color:var(--bg-raised)] px-8 py-16 md:px-16">
+                  <div className="text-[12px] tracking-[0.18em] uppercase text-clay">{service.idx}</div>
+                  <h3 className="mt-4 text-[clamp(40px,5vw,68px)]">{service.title}</h3>
+                  <p className="mt-5 max-w-[42ch] text-[color:var(--muted)]">{service.copy}</p>
+                </Reveal>
+              </article>
+            ))}
+          </section>
+        </FolioPin>
+
+        <section className="bg-live-oak py-24 text-limestone">
+          <Reveal className="mx-auto w-[min(1320px,calc(100%-48px))]">
+            <p className="kicker">Ready to get started?</p>
+            <h2 className="mt-4 text-[clamp(48px,6vw,88px)]">Book an appointment today.</h2>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Cta variant="primary" onClick={openQuote}>Get a Free Quote</Cta>
+              <Cta variant="tertiary" className="text-caliche" onClick={openQuote}>Call Us</Cta>
+            </div>
+          </Reveal>
+        </section>
+
+        <FolioPin index="03" label="Quote">
+          <section className="bg-[color:var(--bg)] py-28" id="quote">
+            <Reveal className="mx-auto w-[min(1320px,calc(100%-48px))]">
+              <p className="folio lg:hidden"><span>03 / Quote</span><span>Get a quote</span></p>
+              <h2 className="max-w-[16ch] text-[clamp(42px,5vw,76px)]">Receiving a quote is easy and only takes three simple steps</h2>
+              <div className="mt-16 grid gap-10 md:grid-cols-3">
+                {[
+                  ["01", "Send us a text", "Tell us what you need painted. We usually respond via text within a few minutes."],
+                  ["02", "Chat on the phone", "Walk through colors, timing, and the rooms or buildings that need attention."],
+                  ["03", "Receive a quote", "Get a clear, no-obligation estimate for residential or commercial work."],
+                ].map(([idx, title, copy]) => (
+                  <article key={idx} className="border-t border-[color:var(--rule)] pt-6">
+                    <div className="text-clay">{idx}</div>
+                    <h3 className="mt-3 text-[36px]">{title}</h3>
+                    <p className="mt-3 text-[color:var(--muted)]">{copy}</p>
+                    {idx === "01" && (
+                      <div className="mt-6">
+                        <Cta variant="secondary" onClick={openQuote}>Send us a Text</Cta>
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </Reveal>
+          </section>
+        </FolioPin>
+
+        <FolioPin index="04" label="Archive">
+          <section className="bg-[color:var(--bg)] pb-28" id="galleries">
+            <div className="mx-auto w-[min(1320px,calc(100%-48px))]">
+              <Reveal className="flex flex-col justify-between gap-10 lg:flex-row lg:items-end">
+                <div>
+                  <p className="folio lg:hidden"><span>04 / Archive</span><span>Our Best Work</span></p>
+                  <h2 className="text-[clamp(42px,5vw,76px)]">See why our customers love us</h2>
+                  <button className="mt-4 text-[12px] tracking-[0.16em] uppercase text-clay" type="button" onClick={() => setFilter("all")}>See all photos</button>
+                </div>
+                <div className="flex flex-wrap gap-x-4 gap-y-2 text-[11px] tracking-[0.14em] uppercase">
+                  {FILTERS.map(([value, label]) => (
+                    <button
+                      key={value}
+                      className={filter === value ? "text-clay" : "text-[color:var(--muted)]"}
+                      type="button"
+                      onClick={() => setFilter(value)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </Reveal>
+              <div className="mt-12 columns-1 gap-4 sm:columns-2 lg:columns-3">
+                {photos.map((photo) => (
+                  <motion.figure
+                    key={photo.src}
+                    className="mb-4 cursor-pointer break-inside-avoid"
+                    whileHover={reduced ? {} : { y: -4 }}
+                    onClick={() => setLightbox(photo)}
+                  >
+                    <img src={photo.src} alt={photo.alt} className="w-full cursor-pointer object-cover" />
+                    <figcaption className="mt-2 text-[12px] tracking-[0.12em] uppercase text-[color:var(--muted)]">{photo.caption}</figcaption>
+                  </motion.figure>
                 ))}
               </div>
             </div>
-            <div className="masonry gallery-grid">
-              {photos.map((photo) => (
-                <figure key={photo.src} onClick={() => setLightbox(photo)}>
-                  <img src={photo.src} alt="for Martinez Painting in Austin, TX" />
-                  <figcaption>{photo.caption}</figcaption>
-                </figure>
-              ))}
-            </div>
-          </div>
-        </section>
+          </section>
+        </FolioPin>
 
-        <section className="block block-dark" id="reviews">
-          <div className="wrap">
-            <p className="folio"><span>05 / Voice</span><span>Reviews</span></p>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 24, flexWrap: "wrap", marginBottom: 36, alignItems: "end" }}>
-              <h2 style={{ fontSize: "clamp(48px,6vw,88px)" }}>Leave Us a Review</h2>
-              <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
-                <a className="btn btn-line" href="https://www.google.com/search?q=Martinez+Painting+Austin+TX+reviews" target="_blank" rel="noreferrer">Leave us a review on Google</a>
-                <a className="btn btn-line" href="https://www.facebook.com" target="_blank" rel="noreferrer">Leave us a review on Facebook</a>
-                <a className="btn btn-cream" href="#reviews">See all reviews</a>
+        <FolioPin index="05" label="Voice">
+          <section className="bg-[color:var(--bg-deep)] py-28" id="reviews">
+            <Reveal className="mx-auto w-[min(1320px,calc(100%-48px))]">
+              <p className="folio lg:hidden"><span>05 / Voice</span><span>Reviews</span></p>
+              <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
+                <h2 className="text-[clamp(48px,6vw,88px)]">Leave Us a Review</h2>
+                <div className="flex flex-wrap items-center gap-4">
+                  <Cta as="a" variant="secondary" href="https://www.google.com/search?q=Martinez+Painting+Austin+TX+reviews" target="_blank" rel="noreferrer">Leave us a review on Google</Cta>
+                  <Cta as="a" variant="tertiary" href="#reviews">See all reviews</Cta>
+                </div>
               </div>
-            </div>
-            <div className="reviews-wrap">
-              <article className="review featured">
-                <div>
-                  <div className="stars">★★★★★ out of 5 stars</div>
-                  <p>“Stop thinking about it, and just call them! They&apos;re worth every penny.”</p>
-                </div>
-                <footer>Linda Perkins · Interior Painting · Facebook</footer>
-              </article>
-              <article className="review">
-                <div>
-                  <div className="stars">★★★★★ out of 5 stars</div>
-                  <p>“Reach out today! They came in clutch when I was in need. Thank you!”</p>
-                </div>
-                <footer>Aubree Bowers · Interior Painting · Facebook</footer>
-              </article>
-              <article className="review">
-                <div>
-                  <div className="stars">★★★★★ out of 5 stars</div>
-                  <p>“I tell everyone I know to give them a call - they&apos;re the best there is!”</p>
-                </div>
-                <footer>Rihanna Rivas · Interior Painting · Facebook</footer>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section className="block faq-band" id="faq">
-          <div className="wrap">
-            <p className="folio"><span>06 / Notes</span><span>FAQ image</span></p>
-            <h2 className="faq-title">Frequently asked questions</h2>
-            <div className="faq-full">
-              {FAQS.map((item, index) => (
-                <article className={`faq-item${openFaq === index ? " open" : ""}`} key={item.q}>
-                  <button type="button" onClick={() => setOpenFaq(openFaq === index ? null : index)}>
-                    <span className="q">{item.q}</span>
-                    <span className="mark">{openFaq === index ? "−" : "+"}</span>
-                  </button>
-                  <p>{item.a}</p>
+              <div className="grid gap-4 lg:grid-cols-3">
+                <article className="bg-[color:var(--bg-raised)] p-8 lg:col-span-2">
+                  <div className="text-clay">★★★★★ out of 5 stars</div>
+                  <p className="mt-6 font-display text-[clamp(28px,3vw,42px)] leading-tight">“Stop thinking about it, and just call them! They&apos;re worth every penny.”</p>
+                  <footer className="mt-8 text-[12px] tracking-[0.12em] uppercase text-[color:var(--muted)]">Linda Perkins · Interior Painting</footer>
                 </article>
-              ))}
-            </div>
-          </div>
-        </section>
+                <article className="bg-[color:var(--bg-raised)] p-8">
+                  <div className="text-clay">★★★★★ out of 5 stars</div>
+                  <p className="mt-6 font-display text-[28px] leading-tight">“Reach out today! They came in clutch when I was in need. Thank you!”</p>
+                  <footer className="mt-8 text-[12px] tracking-[0.12em] uppercase text-[color:var(--muted)]">Aubree Bowers · Interior Painting</footer>
+                </article>
+                <article className="bg-[color:var(--bg-raised)] p-8 lg:col-span-3">
+                  <div className="text-clay">★★★★★ out of 5 stars</div>
+                  <p className="mt-6 font-display text-[28px] leading-tight">“I tell everyone I know to give them a call - they&apos;re the best there is!”</p>
+                  <footer className="mt-8 text-[12px] tracking-[0.12em] uppercase text-[color:var(--muted)]">Rihanna Rivas · Interior Painting</footer>
+                </article>
+              </div>
+            </Reveal>
+          </section>
+        </FolioPin>
+
+        <FolioPin index="06" label="Notes">
+          <section className="bg-[color:var(--bg)] py-28" id="faq">
+            <Reveal className="mx-auto w-[min(860px,calc(100%-48px))]">
+              <p className="folio lg:hidden"><span>06 / Notes</span><span>FAQ</span></p>
+              <h2 className="mb-12 text-[clamp(42px,5vw,76px)]">Frequently asked questions</h2>
+              <div>
+                {FAQS.map((item, index) => {
+                  const open = openFaq === index;
+                  return (
+                    <article key={item.q} className="border-t border-[color:var(--rule)]">
+                      <button
+                        type="button"
+                        className="flex w-full items-center justify-between gap-6 py-6 text-left font-display text-[clamp(22px,3vw,32px)]"
+                        onClick={() => setOpenFaq(open ? null : index)}
+                        aria-expanded={open}
+                      >
+                        <span>{item.q}</span>
+                        <span className="text-clay">{open ? "−" : "+"}</span>
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {open && (
+                          <motion.div
+                            initial={reduced ? { opacity: 1 } : { height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={reduced ? { opacity: 1 } : { height: 0, opacity: 0 }}
+                            transition={{ duration: reduced ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
+                            className="overflow-hidden"
+                          >
+                            <p className="pb-6 text-[color:var(--muted)]">{item.a}</p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </article>
+                  );
+                })}
+              </div>
+            </Reveal>
+          </section>
+        </FolioPin>
 
         <AreaMapSection />
 
-        <section className="block" id="showcases">
-          <div className="wrap">
-            <p className="folio"><span>08 / Journal</span><span>Explore local project showcases</span></p>
-            <h2 style={{ fontSize: "clamp(42px,5vw,72px)", marginBottom: 8 }}>Austin, TX · Jun 2024</h2>
-            <div className="journal">
-              <article className="entry">
-                <div className="meta">Linda Perkins<br />5 · Jun 2024</div>
-                <div>
-                  <h3>“Reviving Reliability: A Comprehensive Case Study of Advanced Roofing Repairs and Restoration”</h3>
-                  <p>One of the most compelling aspects of the &quot;Reviving Reliability: A Comprehensive Case Study of Advanced Roofing Repairs and Restoration&quot; project was our approach to diagnosing and addressing roof deterioration. Our team implemented a multi-step evaluation process that began with an in-depth inspection utilizing drone technology and thermal imaging. This allowed us to identify hidden leaks and underlying damage that might not have been visible through traditional inspection methods. Once the comprehensive assessment was complete, we collaborated closely with structural engineers to craft a tailored repair plan, ensuring that each weak spot was meticulously fortified. Key areas such as flashing, shingles, and underlayment were replaced using top-grade materials known for their durability and weather resistance. By incorporating cutting-edge techniques including synthetic underlayment and seamless gutters, we not only restored the roof&apos;s integrity but significantly enhanced its longevity. This methodical and innovative repair process not only revives the roof’s reliability but also provides the homeowner with a renewed sense of security, knowing their investment is protected against future unforeseeable weather conditions.</p>
-                  <p style={{ marginTop: 14, color: "#f3ece3" }}>Stop thinking about it, and just call them! They&apos;re worth every penny.</p>
-                </div>
-                <div className="meta">Austin, TX</div>
-              </article>
-              <article className="entry">
-                <div className="meta">Linda Perkins<br />5 · Jun 2024</div>
-                <div>
-                  <h3>“Rebuilding Roofs, Restoring Trust: A Case Study on Successful Roofing Replacement Projects”</h3>
-                  <p>One exemplary project that highlights the success of our roofing replacement initiatives took place in the suburban community of Brookside. The Brookside Middle School, an iconic building dating back to the 1960s, was facing severe issues due to an aging roof that had developed leaks and was compromising the integrity of the structure. Our team commenced the project with a comprehensive assessment, identifying not only the evident problems but also latent issues that could pose future risks. A key aspect of our approach was the use of durable, eco-friendly materials that promised longevity and sustainability. Our communication with the school administration was transparent and continuous; they were kept informed at every phase, ensuring there were no surprises and that the project timeline was adhered to meticulously. During construction, we implemented stringent safety protocols to safeguard both workers and students, coordinating closely to minimize disruptions to the school’s daily activities. The project was completed ahead of schedule, and the new roof not only revitalized the building’s appearance but also significantly enhanced its functionality. Feedback from the school community was overwhelmingly positive, with many praising the professionalism and reliability of our team. This project did more than just replace a roof; it restored trust in the possibility of seamless, high-quality construction work, reinforcing our reputation as a dependable partner in community infrastructure projects.</p>
-                  <p style={{ marginTop: 14, color: "#f3ece3" }}>Stop thinking about it, and just call them! They&apos;re worth every penny.</p>
-                </div>
-                <div className="meta">Austin, TX</div>
-              </article>
-              <article className="entry">
-                <div className="meta">Aubree Bowers<br />5 · Jun 2024</div>
-                <div>
-                  <h3>“Seamless Durability: A Comprehensive Case Study of a Modern Roofing Installation Project”</h3>
-                  <p>Seamless Durability: A Comprehensive Case Study of a Modern Roofing Installation Project One of the defining elements of this modern roofing installation project was the meticulous selection of materials, which set the foundation for its long-term durability and aesthetic appeal. To achieve an optimal balance between resilience and visual harmony, our team opted for high-performance composite shingles known for their impressive endurance against harsh weather conditions. These shingles not only offered superior protection against winds, rain, and hail but also significantly reduced maintenance needs for the client. Additionally, the chosen materials boasted energy-efficient properties, reflecting solar heat away from the building and thereby contributing to lower utility costs. The installation process itself demonstrated seamless precision; our team utilized advanced roofing techniques, including reinforced underlayment and state-of-the-art ventilation systems, to prevent moisture buildup and potential structural damage. Each phase of the project, from initial assessment to final inspection, was executed with rigorous attention to detail, ensuring that the new roof would provide robust protection and retaining its pristine appearance for years to come. The client&apos;s satisfaction was further affirmed through a series of post-installation evaluations, which confirmed that our approach not only met but exceeded industry standards for modern roofing installations.</p>
-                  <p style={{ marginTop: 14, color: "#f3ece3" }}>Reach out today! They came in clutch when I was in need. Thank you!</p>
-                </div>
-                <div className="meta">Austin, TX</div>
-              </article>
-            </div>
-            <a className="see-all" href="#showcases">See more project showcases</a>
-          </div>
-        </section>
+        <FolioPin index="08" label="Journal">
+          <section className="bg-[color:var(--bg)] py-28" id="showcases">
+            <Reveal className="mx-auto w-[min(1320px,calc(100%-48px))]">
+              <p className="folio lg:hidden"><span>08 / Journal</span><span>Explore local project showcases</span></p>
+              <h2 className="mb-2 text-[clamp(42px,5vw,72px)]">Austin, TX · Jun 2024</h2>
+              <div className="mt-12 space-y-16">
+                {SHOWCASES.map((entry) => (
+                  <article key={entry.title} className="grid gap-6 border-t border-[color:var(--rule)] pt-10 lg:grid-cols-[160px_1fr_120px]">
+                    <div className="text-[13px] text-[color:var(--muted)]">{entry.author}<br />5 · {entry.date}</div>
+                    <div>
+                      <h3 className="text-[clamp(28px,3vw,40px)] leading-tight">“{entry.title}”</h3>
+                      <p className="mt-5 max-w-[68ch] text-[color:var(--muted)]">{entry.body}</p>
+                      <p className="mt-4 text-caliche">{entry.quote}</p>
+                    </div>
+                    <div className="text-[13px] text-[color:var(--muted)]">{entry.place}</div>
+                  </article>
+                ))}
+              </div>
+              <a className="mt-10 inline-block text-[12px] tracking-[0.16em] uppercase text-clay" href="#showcases">See more project showcases</a>
+            </Reveal>
+          </section>
+        </FolioPin>
 
-        <section className="cta">
-          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80" alt="Ready to get started cover-photo" />
-          <div className="inner">
-            <p className="kicker" style={{ color: "#e7b089" }}>Ready to get started?</p>
-            <h2>Book an appointment today.</h2>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <span className="btn btn-cream" style={{ cursor: "default" }}>Insured</span>
-              <button className="btn btn-cream" onClick={openQuote}>Get a Free Quote</button>
-              <button className="btn btn-line" onClick={openQuote}>Call Us</button>
+        <section className="relative min-h-[70vh] overflow-hidden">
+          <img
+            className="absolute inset-0 h-full w-full object-cover"
+            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80"
+            alt="Austin home exterior at dusk after a Martinez Painting project"
+          />
+          <div className="absolute inset-0 bg-ink/55" />
+          <Reveal className="relative z-10 mx-auto flex min-h-[70vh] w-[min(1320px,calc(100%-48px))] flex-col justify-end py-20 text-limestone">
+            <p className="kicker">Ready to get started?</p>
+            <h2 className="mt-4 max-w-[10ch] text-[clamp(52px,8vw,100px)]">Book an appointment today.</h2>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <span className="text-[11px] tracking-[0.16em] uppercase text-caliche">Insured</span>
+              <Cta variant="primary" onClick={openQuote}>Get a Free Quote</Cta>
+              <Cta variant="tertiary" className="text-caliche" onClick={openQuote}>Call Us</Cta>
             </div>
-          </div>
+          </Reveal>
         </section>
       </main>
       <Footer />
       {lightbox && (
-        <div className="lightbox open" onClick={() => setLightbox(null)}>
-          <img src={lightbox.src} alt="Gallery photo" />
+        <div className="fixed inset-0 z-[70] grid place-items-center bg-ink/88 p-6" onClick={() => setLightbox(null)}>
+          <img src={lightbox.src} alt={lightbox.alt} className="max-h-[88vh] max-w-full object-contain" />
         </div>
       )}
     </>
